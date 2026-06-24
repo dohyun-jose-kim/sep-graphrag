@@ -46,6 +46,14 @@ def clean(el) -> tuple[str, bool]:
     return re.sub(r"\s+", " ", text).strip(), had
 
 
+def header_id(el) -> str | None:
+    """섹션 앵커. 보통 <h2><a name="X">..</a></h2> (구식 a name) 형태라 fallback 필요."""
+    if el.get("id"):
+        return el.get("id")
+    a = el.find("a")
+    return (a.get("id") or a.get("name")) if a else None
+
+
 def paras_of(container) -> tuple[list[str], bool]:
     """container 내 <p>들을 문단 리스트로(수식 strip). preamble용."""
     out, math = [], False
@@ -79,7 +87,7 @@ def extract(slug: str, html: str) -> dict:
                     sections.append(current)
                 title, had = clean(el)
                 math_any = math_any or had
-                current = {"id": el.get("id"), "level": int(el.name[1]), "title": title, "paragraphs": []}
+                current = {"id": header_id(el), "level": int(el.name[1]), "title": title, "paragraphs": []}
                 continue
             if el.find_parent(BLOCKS):  # 다른 블록에 중첩된 건 부모가 흡수 → 스킵
                 continue
