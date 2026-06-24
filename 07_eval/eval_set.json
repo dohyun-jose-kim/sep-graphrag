@@ -1,0 +1,36 @@
+{
+  "description": "SEP RAG 리트리벌 평가셋. 우리가 작성한 질문 + gold entry slug(식별자)만 포함(저작권 무관). entry-level gold.",
+  "gold_level": "entry",
+  "types": {
+    "factoid": "단일 entry 정밀 매칭 (dense child) — gold 중 1개라도 top-k에 들면 성공",
+    "synthesis": "entry 내 설명/종합 (small-to-big parent) — gold 중 1개라도 top-k",
+    "comparison": "교차/멀티홉 (graph 확장) — required의 모든 entry가 top-k에 들어야 성공"
+  },
+  "metrics": ["hit@k(any gold)", "mrr(first gold-entry chunk)", "coverage@k(required 충족률, comparison)"],
+  "queries": [
+    {"id": "q01", "type": "factoid", "query": "What is Descartes' cogito argument?", "gold_entries": ["descartes"]},
+    {"id": "q02", "type": "factoid", "query": "Explain Hume's distinction between impressions and ideas.", "gold_entries": ["hume"]},
+    {"id": "q03", "type": "factoid", "query": "What is Kant's categorical imperative?", "gold_entries": ["kant-moral", "kant"]},
+    {"id": "q04", "type": "factoid", "query": "What is the Gettier problem for the analysis of knowledge?", "gold_entries": ["knowledge-analysis"]},
+    {"id": "q05", "type": "factoid", "query": "What is Frege's distinction between sense and reference?", "gold_entries": ["frege"]},
+    {"id": "q06", "type": "factoid", "query": "What is the problem of free will and determinism?", "gold_entries": ["freewill"]},
+    {"id": "q07", "type": "factoid", "query": "What is Nietzsche's idea of eternal recurrence?", "gold_entries": ["nietzsche"]},
+    {"id": "q08", "type": "factoid", "query": "What is the Chinese room argument against strong AI?", "gold_entries": ["chinese-room"]},
+    {"id": "q09", "type": "factoid", "query": "What is supervenience in philosophy of mind?", "gold_entries": ["supervenience"]},
+    {"id": "q10", "type": "factoid", "query": "What is Russell's theory of definite descriptions?", "gold_entries": ["descriptions", "russell"]},
+    {"id": "q11", "type": "factoid", "query": "What is the liar paradox?", "gold_entries": ["liar-paradox"]},
+    {"id": "q12", "type": "synthesis", "query": "Summarize Rawls's argument from the original position for justice.", "gold_entries": ["rawls", "original-position"]},
+    {"id": "q13", "type": "synthesis", "query": "Explain Aristotle's doctrine of the mean in ethics.", "gold_entries": ["aristotle-ethics"]},
+    {"id": "q14", "type": "synthesis", "query": "What is Plato's theory of Forms and why did he propose it?", "gold_entries": ["plato"]},
+    {"id": "q15", "type": "synthesis", "query": "Explain Mill's harm principle and its justification.", "gold_entries": ["mill"]},
+    {"id": "q16", "type": "synthesis", "query": "What is the experience machine objection to hedonism?", "gold_entries": ["hedonism", "well-being"]},
+    {"id": "q17", "type": "synthesis", "query": "Explain the master-slave dialectic in Hegel.", "gold_entries": ["hegel"]},
+    {"id": "q18", "type": "comparison", "query": "How does Camus's absurdism differ from Sartre's existentialism?", "gold_entries": ["camus", "sartre", "existentialism"], "required": ["camus", "sartre"]},
+    {"id": "q19", "type": "comparison", "query": "Compare Hume's and Kant's views on causation.", "gold_entries": ["hume", "kant", "causation-metaphysics"], "required": ["hume", "kant"]},
+    {"id": "q20", "type": "comparison", "query": "How did Aristotle respond to Plato's theory of Forms?", "gold_entries": ["aristotle", "plato"], "required": ["aristotle", "plato"]},
+    {"id": "q21", "type": "comparison", "query": "What is the disagreement between consequentialism and deontology?", "gold_entries": ["consequentialism", "ethics-deontological"], "required": ["consequentialism", "ethics-deontological"]},
+    {"id": "q22", "type": "comparison", "query": "How does Leibniz's rationalism contrast with Locke's empiricism?", "gold_entries": ["leibniz", "locke"], "required": ["leibniz", "locke"]},
+    {"id": "q23", "type": "comparison", "query": "Compare functionalism and the mind-brain identity theory.", "gold_entries": ["functionalism", "mind-identity"], "required": ["functionalism", "mind-identity"]},
+    {"id": "q24", "type": "comparison", "query": "What is the relation between Bayesian epistemology and confirmation?", "gold_entries": ["epistemology-bayesian", "confirmation"], "required": ["epistemology-bayesian", "confirmation"]}
+  ]
+}
