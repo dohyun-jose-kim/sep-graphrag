@@ -24,5 +24,21 @@ python 02_scrape/023_graph_builder/build_graph.py
 - 커뮤니티: Louvain(무방향 투영) → 주제 클러스터
 - 방향성 보존(DiGraph), 커뮤니티/시각화는 undirected로 접어서 계산
 
-## 상태
-전체 크롤 완료 후 1,861 노드 + 전체 엣지로 최종 산출. (부분 실행은 검증용.)
+## 결과 (전체)
+**1,861 노드 / 20,660 엣지 / 10 커뮤니티** (largest 352).
+- 허브(PageRank/in-degree): kant, aristotle, plato, aquinas, descartes, hume, leibniz, consequentialism …
+- 커뮤니티 = 주제 클러스터 (top 멤버):
+  | # | size | 테마 |
+  |---|---|---|
+  | 0 | 352 | 정치·윤리 (consequentialism, liberalism, virtue, rawls) |
+  | 4 | 296 | 고대·중세 (aristotle, plato, aquinas, ockham) |
+  | 3 | 221 | 심리철학 (consciousness, physicalism, functionalism) |
+  | 5 | 208 | 논리·수학 (russell, frege, set-theory, modal logic) |
+  | 1 | 197 | 독일관념론·현상학 (kant, hegel, husserl, marx) |
+  | 9 | 165 | 과학철학·확률 (bayesian, confirmation, induction) |
+  | 6 | 156 | 근대 (hume, leibniz, descartes, locke, spinoza) |
+  | 8 | 93 | 자유의지·물리 (freewill, qm, causation) |
+  | 7 | 92 | 인식론 (knowledge, justification, skepticism) |
+  | 2 | 81 | 중국철학 (daoism, mencius, confucius, mohism) |
+
+전체 요약은 `data/graph/hubs.json`, 인터랙티브는 `data/graph/graph.html`.

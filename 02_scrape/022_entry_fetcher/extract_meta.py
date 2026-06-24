@@ -22,6 +22,8 @@ CONTENTS = {
     e["slug"]: e
     for e in json.loads((ROOT / "data" / "contents" / "entries.json").read_text(encoding="utf-8"))
 }
+# 대소문자 무시 → 정규 slug 매핑 (SEP slug 대부분 소문자지만 equivME 등 5개는 대문자 포함)
+CI = {s.lower(): s for s in CONTENTS}
 RAW = ROOT / "data" / "raw" / "entries"
 OUT = ROOT / "data" / "metadata"
 
@@ -48,9 +50,12 @@ def related_slugs(soup: BeautifulSoup) -> list[str]:
             continue
         path = href.split("#")[0].split("?")[0]
         parts = [p for p in path.split("/") if p and p != ".."]
-        if parts and parts[-1] not in seen:
-            seen.add(parts[-1])
-            out.append(parts[-1])
+        if not parts:
+            continue
+        slug = CI.get(parts[-1].lower(), parts[-1])  # 대소문자 무시 매칭 → 정규 slug 복원
+        if slug not in seen:
+            seen.add(slug)
+            out.append(slug)
     return out
 
 

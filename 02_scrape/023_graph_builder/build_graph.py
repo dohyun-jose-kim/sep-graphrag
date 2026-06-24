@@ -62,6 +62,17 @@ def analyze(G: nx.DiGraph) -> dict:
         return [{"slug": s, "title": G.nodes[s]["title"], "value": round(v, 5)}
                 for s, v in sorted(d.items(), key=lambda kv: kv[1], reverse=True)[:k]]
 
+    # 커뮤니티별 상위 멤버(PageRank 기준) — 주제 클러스터를 읽을 수 있게
+    members: dict[int, list[str]] = {}
+    for n, d in G.nodes(data=True):
+        members.setdefault(d["community"], []).append(n)
+    community_summary = [
+        {"community": cid, "size": len(ms),
+         "top": [{"slug": s, "title": G.nodes[s]["title"]}
+                 for s in sorted(ms, key=lambda n: pr[n], reverse=True)[:8]]}
+        for cid, ms in sorted(members.items(), key=lambda kv: -len(kv[1]))
+    ]
+
     return {
         "nodes": G.number_of_nodes(),
         "edges": G.number_of_edges(),
@@ -70,6 +81,7 @@ def analyze(G: nx.DiGraph) -> dict:
         "largest_community": max((len(c) for c in communities), default=0),
         "top_by_pagerank": top(pr),
         "top_by_in_degree": top(indeg),
+        "community_summary": community_summary,
     }
 
 
@@ -108,6 +120,9 @@ def main() -> None:
           f"| communities {stats['communities']} (largest {stats['largest_community']})")
     print("top by PageRank:", [t["slug"] for t in stats["top_by_pagerank"][:8]])
     print("top by in-degree:", [t["slug"] for t in stats["top_by_in_degree"][:8]])
+    print("communities (size · 상위 멤버):")
+    for c in stats["community_summary"]:
+        print(f"  #{c['community']:>3} ({c['size']:>4}): " + ", ".join(t["slug"] for t in c["top"][:6]))
     print(f"-> {OUT.relative_to(ROOT)}/ (edges.csv, graph.json, graph.html, hubs.json)")
 
 

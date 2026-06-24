@@ -21,6 +21,11 @@ python 02_scrape/022_entry_fetcher/extract_meta.py              # 메타 추출(
 페이지 구조: `#pubinfo`(날짜), `#related-entries`(`../<slug>/` 링크), `#article-copyright`,
 `#main-text` 내 h2/h3 `id` 앵커(섹션). 꼬리(`#bibliography`,`#academic-tools`)는 청킹 단계에서 제외.
 
-## 검증 (표본 14개, 크롤 진행 중)
-related edges 140 / related 누락 0 / dangling 타깃(contents 미존재) 0 / 메타 추출 정상.
-전체 완료 시 `entries parsed == 1,861` 확인 후 #2 종료.
+## slug 정규화
+related href가 가끔 다른 대소문자(`../Meinong/`)거나, contents slug 자체가 대문자 포함
+(`equivME`, `statphys-Boltzmann`, `physics-Rpcc`, `18thGerman-preKant`, `emotion-Christian-tradition` 5개).
+→ 대소문자 무시 매칭 후 **정규 slug로 복원**(`CI` 맵).
+
+## 결과 (전체, 2026-06-24 스냅샷)
+fetch ok 1,861 / fail 0. **entries parsed 1,861**, related edges 20,665, related 누락 1,
+revision 없음 294(최초발행만), dangling 타깃 2(`ethics-computer`,`index.html` — SEP 측 stale 링크).
