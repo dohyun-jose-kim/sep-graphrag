@@ -44,7 +44,19 @@ docker ps | grep qdrant                                # 없으면: docker compo
 retrieval context → Ollama 생성(qwen3:14b /no_think, gemma3:4b) → 요약+인용+딥링크.
 - 검증: `python 06_qa/061_qa/qa.py "질문"` 엔드투엔드, 양 모델 답변 + 출처. 커밋(`Closes #9`).
 
-### STEP 5 — 마무리
+### STEP 5 — Phase 7 챗봇 UI (#11)  — `08_chatbot/app.py`
+**참고 디자인**: `/Users/inco/01_Projects/dohyun-jose-kim/03_Chatbot-RAG-LLM/RAG-LLM_ver2.0.0/06_ui/`
+(Streamlit: `streamlit_app.py`/`chat_interface.py`/`sidebar.py`). 채팅버블 + 사이드바 모델선택 + 소스 expander 스타일 차용.
+우리 적응:
+- **Streamlit이 우리 `Retriever`(051) + `qa`(061)를 직접 호출** (로컬 단일유저 → 별도 FastAPI 생략; 원하면 05_api 추가 가능).
+- 화면: 타이틀 "SEP GraphRAG Chatbot", `st.chat_message` 버블, `st.chat_input`, 세션 state.
+- 사이드바: 모델 선택(`qwen3:14b`/`gemma3:4b`), **"graph 확장" 토글(use_graph)**, "새 세션".
+- assistant 답변 하단 **expander = 검색된 SEP 출처**(entry · section_path · `url#anchor` 딥링크) — 참고 repo의 PMID 자리 대체. qwen3면 thinking 트레이스 토글(노출 옵션).
+- 저작권: 답변은 **요약+짧은인용+딥링크**(qa.py 그대로), 본문 덤프 금지, **로컬 전용**(공개 배포 X).
+- 의존성: `uv pip install streamlit`. 실행: `streamlit run 08_chatbot/app.py`.
+- 검증: 질의→답변+출처 버블 렌더, graph 토글 동작, 모델 전환. 커밋(`Closes #11`).
+
+### STEP 6 — 마무리
 - README 갱신(파이프라인 완성 상태), Phase 6 결과 요약을 Docs에.
 - 열린 이슈 정리, 최종 커밋·푸시.
 - (옵션) graph.html 아티팩트, 4B/8B subset 비교 — 여력 남으면.
