@@ -53,22 +53,27 @@ SEP 본문은 무료지만 저작권이 살아있고, 핵심 금지사항은 **"
 
 ## 3. Repo 구조 & gitignore
 
+> 디렉터리 컨벤션 상세는 [`CLAUDE.md`](./CLAUDE.md) §3. 단계 폴더는 코드+문서를 함께 담고, 해당 작업 착수 시 생성한다.
+
 ```
-12_SEP_GraphRAG/
-├── src/
-│   ├── scrape.py      # robots 존중 + rate limit, 본문 + Related Entries 동시 수집
-│   ├── graph.py       # edgelist 구축 + networkx 분석 + pyvis 시각화
-│   ├── chunk.py       # 문단 인식 분할 + small-to-big (parent_id 부여)
-│   ├── embed.py       # Qwen3 임베딩 → Qdrant 적재
-│   ├── retrieve.py    # child 검색 → rerank → parent 확장 → (graph) → dedup
-│   ├── qa.py          # 모델 어댑터(Gemma/Qwen) + 프롬프트(요약+인용+링크)
-│   └── eval.py        # 평가셋 기반 MRR/NDCG 비교
+sep-graphrag/
+├── 01_setup/          # 환경·의존성·에디션 고정
+├── 02_scrape/         # 스크래핑 + 그래프 (Phase 1)
+│   ├── 021_contents_parser/
+│   ├── 022_entry_fetcher/
+│   └── 023_graph_builder/
+├── 03_chunk/          # 문단인식 + small-to-big (Phase 2)
+├── 04_embed/          # Qwen3 임베딩 → Qdrant (Phase 3)
+├── 05_retrieve/       # 검색 + rerank + graph 확장 (Phase 4)
+├── 06_qa/             # Gemma/Qwen 생성 (Phase 5)
+├── 07_eval/           # MRR/NDCG 평가 (Phase 6)
+├── Docs/              # PLAN.md, 결정 로그
 ├── data/              # gitignore (로컬 전용)
 ├── vectordb/          # gitignore
 ├── docstore/          # gitignore (parent 본문)
-├── .gitignore
+├── CLAUDE.md          # 작업 정책
 ├── README.md
-└── PLAN.md
+└── .gitignore
 ```
 
 `.gitignore` 핵심:
