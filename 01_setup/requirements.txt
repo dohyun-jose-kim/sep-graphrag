@@ -10,3 +10,8 @@ networkx>=3.4
 pyvis>=0.3.2
 numpy>=1.26      # networkx pagerank/louvain
 scipy>=1.11      # networkx pagerank
+
+# Phase 3 — 임베딩/인덱싱 (041, 042)
+torch>=2.2                  # MPS(Apple Silicon)
+sentence-transformers>=3
+qdrant-client>=1.9
