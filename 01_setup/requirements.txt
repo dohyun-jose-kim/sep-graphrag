@@ -1,0 +1,6 @@
+# 의존성. 단계별로 추가한다. (venv: uv 사용 → `uv pip install -r 01_setup/requirements.txt`)
+
+# Phase 1 — 스크래핑/파싱 (021)
+httpx>=0.28
+beautifulsoup4>=4.13
+lxml>=5
