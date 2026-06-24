@@ -17,7 +17,7 @@ python 03_chunk/032_chunker/build_chunks.py --target 256 --overlap 40
 ## 규칙
 - **parent = 섹션**(서브섹션 그대로, preamble 포함). **child = 문단 길이보정**: 짧은 문단 머지 / 긴 문단 문장경계 split / 섹션 내 overlap. child는 **섹션 경계 안 넘음**.
 - child 메타: `id, text, tokens, slug, entry, author, section_id, section_path, level, url(#anchor), parent_id, first_published, last_modified, has_stripped_math`.
-- `url`은 섹션 앵커까지 딥링크(예: `…/entries/camus/#ParCamAbs`) → 인용/원문 복귀의 핵심.
+- `url`은 섹션 앵커까지 딥링크(예: `…/entries/camus/#ParCamAbs`) → 인용/원문 복귀의 핵심. 앵커 없는 섹션(주로 `<h4>`)은 **가장 가까운 조상 섹션 앵커로 fallback**(예: h4 "1.2.1" → 부모 h3 `#VioCasObj`).
 
 ## 파라미터 (Phase 6에서 튜닝)
 target 320 / overlap 48 (≈15%)은 베이스라인. PLAN §5의 측정값.
@@ -25,5 +25,5 @@ target 320 / overlap 48 (≈15%)은 베이스라인. PLAN §5의 측정값.
 ## 결과 (target 320 / overlap 48)
 parents **31,371** / children **152,611** (avg 4.86/parent).
 child 토큰: min 6 / p25 213 / median 271 / p75 316 / p95 382 / max 1585.
-url 앵커 보유 94.1%(나머지는 preamble 등 → entry 최상단 링크).
+url 앵커 보유 **97.4%**(무앵커 3,900 = preamble 3,893 + 7; preamble은 entry 최상단이 정상).
 ※ 512토큰 초과 134개(0.09%)는 문장경계 없는 긴 나열문 — Qwen3 32K라 임베딩엔 무해, Phase 6에서 재검토 가능.

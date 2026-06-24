@@ -111,9 +111,20 @@ def main() -> None:
         e = json.loads(line)
         slug, base_url = e["slug"], e["url"]
         h2_title = ""
+        anchors: dict[int, str] = {}  # level -> 가장 가까운 조상 앵커
         for i, sec in enumerate(e["sections"]):
             sid = sec["id"] or f"sec{i}"
-            anchor = sec["id"] if sec["id"] and sec["id"] != "preamble" else None
+            lvl = sec["level"]
+            own = sec["id"] if sec["id"] and sec["id"] != "preamble" else None
+            if own:  # 자체 앵커 보유
+                anchors = {L: a for L, a in anchors.items() if L < lvl}
+                anchors[lvl] = own
+                anchor = own
+            elif sec["id"] == "preamble":  # 도입부 → entry 최상단
+                anchor = None
+            else:  # 앵커 없는 섹션(주로 h4) → 가장 가까운 조상 섹션 앵커로 딥링크
+                ups = [anchors[L] for L in sorted(anchors) if L <= lvl]
+                anchor = ups[-1] if ups else None
             url = f"{base_url}#{anchor}" if anchor else base_url
             if sec["level"] <= 2:
                 h2_title = sec["title"]
