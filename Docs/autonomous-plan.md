@@ -14,7 +14,7 @@ docker ps | grep qdrant                                # 없으면: docker compo
 
 ## 사전 확정된 결정
 - 임베더: Qwen3-Embedding-0.6B (전체). 4B/8B 비교는 시간/여력 남으면 평가셋 subset만.
-- 리랭커: Qwen3-Reranker-0.6B. **로딩 까다로우면 dense-only로 폴백**하고 노트 남김(블로킹 금지).
+- 리랭커: Qwen3-Reranker-0.6B (**causal-LM yes/no 스코어러, 표준 CrossEncoder 아님** — retrieve.py에 공식 포맷 구현, 모델 사전 캐시됨). 로딩/스코어 실패 시 dense 폴백(블로킹 금지). **wake 시 sanity: 리랭크가 점수로 재정렬되는지(전부 동점 아님) 확인, eval B(=rerank) vs A(=dense)로 효과 검증.**
 - 생성 LLM: Ollama `qwen3:14b`(thinking off=프롬프트에 `/no_think`) + `gemma3:4b`. 로컬 `localhost:11434`.
 - 검색 파라미터(베이스라인): child top-k=50 → 리랭크 top-8 → parent 확장(docstore) → dedup → parent ~5. graph는 comparison에서만 1홉, 베이스라인 eval은 graph OFF.
 - 출력(QA): 요약 + 짧은 인용 + `url#anchor` 딥링크. 본문 덤프 금지(저작권).
