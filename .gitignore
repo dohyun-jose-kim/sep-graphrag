@@ -1,0 +1,20 @@
+# === SEP 원문 / 파생물 — 절대 커밋 X (라이선스: 재배포 금지) ===
+data/            # 긁은 HTML / 정제 텍스트
+vectordb/        # Qdrant 인덱스
+docstore/        # parent 본문
+*.jsonl
+*.faiss
+*.sqlite3
+
+# === secrets ===
+.env
+
+# === python ===
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# === os ===
+.DS_Store
