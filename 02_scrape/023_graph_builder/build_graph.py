@@ -86,7 +86,8 @@ def analyze(G: nx.DiGraph) -> dict:
 
 
 def visualize(G: nx.DiGraph, path: Path) -> None:
-    net = Network(height="800px", width="100%", directed=True, bgcolor="#111", font_color="#eee")
+    net = Network(height="800px", width="100%", directed=True, bgcolor="#111",
+                  font_color="#eee", cdn_resources="in_line")  # 자기완결 HTML(외부 lib/ 미생성)
     net.barnes_hut(gravity=-8000, spring_length=120)
     palette = ["#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#42d4f4",
                "#f032e6", "#bfef45", "#fabed4", "#469990", "#dcbeff", "#9A6324"]

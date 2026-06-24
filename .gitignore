@@ -16,5 +16,8 @@ __pycache__/
 *.egg-info/
 .ipynb_checkpoints/
 
+# === pyvis 부산물 (cdn_resources=in_line이면 안 생기지만 방어) ===
+lib/
+
 # === os ===
 .DS_Store
