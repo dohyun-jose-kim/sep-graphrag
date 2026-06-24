@@ -17,7 +17,7 @@
 | 청킹 | 문단 인식(paragraph-aware) + small-to-big |
 | parent / child | parent = 서브섹션, child = 문단(길이 보정) |
 | 생성 LLM | Gemma + Qwen 둘 다, **thinking off 기본** (Qwen은 trace 노출 옵션) |
-| 코퍼스 | **전체 SEP 크롤** (~1,800–1,900 entry, `/contents.html` 기준), 아카이브 에디션 고정 |
+| 코퍼스 | **전체 SEP 크롤** (~1,800–1,900 entry, 라이브 `/entries/`, robots 준수), 로컬 스냅샷(2026-06-24)으로 고정 |
 | 수식/notation | **strip(제거) + 명시** — placeholder + 메타 플래그로 제거 사실 표시 |
 | 그래프 | Related Entries = 방향 그래프 → 시각화 + GraphRAG(Type A) |
 | GitHub | 코드만 public, 데이터/인덱스는 `.gitignore` |
@@ -42,12 +42,16 @@ SEP 본문은 무료지만 저작권이 살아있고, 핵심 금지사항은 **"
 
 ## 2. 스크래핑 매너 (반드시)
 
-- `robots.txt` 존중, `User-Agent` 명시.
-- rate limit ~1 req/sec (빡세게). 안 그러면 IP 차단 위험.
-- **전체(~1,900) 크롤이라 더 신경 써야 함** — ~2,000+ 요청 @ 1 req/s = 실제 1~2시간, 백그라운드로 몇 시간. 429/타임아웃 retry + jitter.
+- **`robots.txt` 준수 (확인 완료, 2026-06-24):**
+  - ❌ `/archives/` **Disallow** (모든 대소문자 조합) → 아카이브 에디션 크롤 금지.
+  - ✅ `/entries/`, `/contents.html` 허용 → **라이브만 긁는다.**
+  - ⏱️ `crawl-delay: 5` → 요청 간 **5초** 준수.
+  - `ia_archiver` 전면 차단 = SEP가 아카이브 크롤을 명시적으로 원치 않음.
+- `User-Agent` 명시.
+- **전체(~1,900) 크롤 타이밍** — ~1,900 요청 @ 5s = 순수 지연만 ~2.6시간, retry/jitter 포함 **3~5시간**. 백그라운드 + checkpoint로.
 - **checkpoint / resume 필수** — 진행 상태(완료 slug)를 디스크에 기록 → 중간에 죽어도 재개, 이미 받은 entry는 재요청 X. 한 번 긁어서 캐시.
-- **공식 덤프/API 없음** → entry별 직접 스크래핑이 유일.
-- 인터넷 아카이브 스캔본(OCR 9GB)은 품질·저작권 애매 → 사용 금지. 아카이브 에디션에서 깨끗하게 긁기.
+- **재현성** — 아카이브 고정 대신 **로컬 스냅샷 + `snapshot_date`(2026-06-24) + entry별 fetched_at·SEP 최종수정일** 기록. (개정이 잦지 않으니 충분.)
+- **공식 덤프/API 없음** → entry별 직접 스크래핑이 유일. 인터넷 아카이브 OCR 스캔본은 품질·저작권 애매 → 사용 금지.
 
 ---
 
@@ -98,8 +102,8 @@ docstore/
 
 ### Phase 0 — 셋업 & 스코프 확정
 - repo 골격, `.gitignore`, 의존성 설치 (qdrant-client, transformers/sentence-transformers, beautifulsoup4, httpx, networkx, pyvis).
-- **에디션 고정:** `/archives/` 인덱스에서 최신 안정 에디션(예: `spr2026`) 확인 → 그 버전으로 고정.
-- **검증:** `/archives/<edition>/contents.html`에서 전체 slug 리스트 파싱 → 리다이렉트 스텁 제외한 실제 entry 수가 출력됨 (dry-run). 이게 크롤 대상 전체 목록.
+- **소스 고정:** robots 확인 → 라이브 `/entries/` + `config.json`에 `snapshot_date` 박제. (아카이브 폐기.)
+- **검증:** 라이브 `/contents.html`에서 전체 slug 리스트 파싱 → 리다이렉트 스텁 제외한 실제 entry 수가 출력됨 (dry-run). 이게 크롤 대상 전체 목록.
 
 ### Phase 1 — 스크래핑 + 그래프 (한 번에)
 - `scrape.py`: **전체 contents 목록 순회**. entry별 본문 HTML + **Related Entries** + 메타(저자, 발행/수정일, 섹션 앵커) 동시 수집. **"see X" 리다이렉트 스텁 제외.** checkpoint/resume(완료 slug 기록).
@@ -175,7 +179,7 @@ docstore/
 ## 6. 아직 안 정한 설계 결정 (착수 전 필요)
 
 1. **코퍼스 범위** — ✅ **전체 SEP 크롤 확정.** seed/홉 BFS 폐기 → `/contents.html` 전체 목록(스텁 제외) 순회. 저장 용량 ~1GB대로 무리 없음. 개발은 슬라이스, 전체는 배치.
-2. **에디션 고정(pinning)** — ✅ **아카이브 에디션 고정 확정.** `/archives/<edition>/entries/<slug>/`에서 긁어 텍스트·수정일 freeze → 벡터 재현성 보장. scrape.py 착수 시 `/archives/` 인덱스에서 최신 안정 에디션(예: `spr2026`) 확인 후 그 버전으로 고정.
+2. **에디션/소스 고정** — ✅ **라이브 `/entries/` + 로컬 스냅샷 확정.** robots.txt가 `/archives/`를 Disallow → 아카이브 고정 폐기. 라이브를 crawl-delay 5초로 긁고 `snapshot_date`(2026-06-24) + entry별 fetched_at·최종수정일로 재현성 확보(개정 빈도 낮아 충분). 현 라이브 ≈ Summer 2026 Edition이라 `edition_label`로 기록.
 3. **docstore 구현** — parent 본문을 sqlite / json / Qdrant 별도 컬렉션 중 어디에. *제안: sqlite.*
 4. **hybrid sparse 방식** — Qdrant native BM25/SPLADE vs BGE-M3 sparse + RRF 융합 파라미터. *Phase 4로 defer 가능.*
 5. **수식/notation 처리** — ✅ **strip + 명시 확정.** `[MATH]` placeholder + `has_stripped_math` 플래그로 제거 사실을 드러냄(조용한 누락 금지). 전체 크롤이라 논리·수리·물리철학 entry 다수 포함되므로 chunk.py에서 필수 처리.

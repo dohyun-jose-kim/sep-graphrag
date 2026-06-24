@@ -1,0 +1,11 @@
+{
+  "source": "live",
+  "edition_label": "Summer 2026 Edition",
+  "snapshot_date": "2026-06-24",
+  "base_url": "https://plato.stanford.edu/",
+  "contents_url": "https://plato.stanford.edu/contents.html",
+  "entry_url_template": "https://plato.stanford.edu/entries/{slug}/",
+  "user_agent": "sep-graphrag/0.1 (personal research; +https://github.com/dohyun-jose-kim/sep-graphrag)",
+  "crawl_delay_seconds": 5,
+  "notes": "robots.txt가 /archives/를 Disallow → 라이브 /entries/ 사용. 재현성은 로컬 스냅샷 + snapshot_date로 확보. crawl-delay 5는 robots.txt 준수값."
+}

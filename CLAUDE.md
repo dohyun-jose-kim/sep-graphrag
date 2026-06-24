@@ -7,6 +7,7 @@
 
 - SEP 본문·청크·벡터 인덱스는 **절대 커밋 금지** (`.gitignore`). 코드만 버전관리한다.
 - 현재 리포는 **private**. SEP 본문을 public으로 내보내는 어떤 행위도 금지.
+- **robots.txt 준수** — `/archives/`는 Disallow라 **금지**, 라이브 `/entries/`·`/contents.html`만 사용. **crawl-delay 5초** 준수. 소스/재현성 설정은 `config.json`.
 - QA 출력은 **요약 + 짧은 인용 + 원문 딥링크**. 본문 통째 덤프 금지.
 - blockquote(원전 인용)는 독립 인덱싱 금지 — 인접 분석 문단의 맥락으로만.
 - 수식은 strip하되 `[MATH]` placeholder + `has_stripped_math` 플래그로 **명시**(조용한 누락 금지).
