@@ -17,6 +17,7 @@ import json
 from pathlib import Path
 
 import numpy as np
+import torch
 from sentence_transformers import SentenceTransformer
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -30,7 +31,7 @@ SHARD = 10000
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--limit", type=int, default=None, help="앞에서 N개만(검증)")
-    ap.add_argument("--batch", type=int, default=64)
+    ap.add_argument("--batch", type=int, default=128)
     ap.add_argument("--device", default="mps")
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
@@ -40,8 +41,9 @@ def main() -> None:
         rows = rows[: args.limit]
     (OUT / "ids.json").write_text(json.dumps([r["id"] for r in rows]), encoding="utf-8")
 
-    model = SentenceTransformer(MODEL, device=args.device)
-    model.max_seq_length = 2048  # 최대 청크(1585 tok)도 안 잘리게
+    model = SentenceTransformer(MODEL, device=args.device,
+                                model_kwargs={"torch_dtype": torch.float16})  # MPS fp16 가속
+    model.max_seq_length = 512  # p95=382 다 커버, 512+ 청크(134개, 0.09%)만 살짝 절단
     dim = model.get_sentence_embedding_dimension()
     n = len(rows)
     print(f"model {MODEL} dim {dim} device {args.device} | children {n}", flush=True)
