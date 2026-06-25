@@ -184,7 +184,9 @@ docstore/
 
 ---
 
-## 6. 아직 안 정한 설계 결정 (착수 전 필요)
+## 6. 설계 결정 (착수 전 필요 — 현재 대부분 확정/보류)
+
+> 실측 결과·최종 결정은 위 **§진행 상태**와 [`eval-design.md`](./eval-design.md)가 우선. 아래는 착수 시점 원안.
 
 1. **코퍼스 범위** — ✅ **전체 SEP 크롤 확정.** seed/홉 BFS 폐기 → `/contents.html` 전체 목록(스텁 제외) 순회. 저장 용량 ~1GB대로 무리 없음. 개발은 슬라이스, 전체는 배치.
 2. **에디션/소스 고정** — ✅ **라이브 `/entries/` + 로컬 스냅샷 확정.** robots.txt가 `/archives/`를 Disallow → 아카이브 고정 폐기. 라이브를 crawl-delay 5초로 긁고 `snapshot_date`(2026-06-24) + entry별 fetched_at·최종수정일로 재현성 확보(개정 빈도 낮아 충분). 현 라이브 ≈ Summer 2026 Edition이라 `edition_label`로 기록.
