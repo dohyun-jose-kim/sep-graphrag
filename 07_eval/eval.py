@@ -49,18 +49,20 @@ def main() -> None:
     queries = json.loads((ROOT / "07_eval" / "eval_set.json").read_text(encoding="utf-8"))["queries"]
 
     configs = {
-        "A_dense": dict(use_rerank=False, use_graph=False),
-        "B_rerank": dict(use_rerank=True, use_graph=False),
-        "C_graph": dict(use_rerank=True, use_graph=True),
+        "A_dense": dict(use_rerank=False, graph="off"),
+        "B_rerank": dict(use_rerank=True, graph="off"),
+        "C_graph_cmp": dict(use_rerank=True, graph="comparison"),  # graph+slot예약, comparison만
     }
     results = {}
     retr_cache = {}
     for name, cfg in configs.items():
         key = cfg["use_rerank"]
         retr = retr_cache.setdefault(key, rmod.Retriever(use_rerank=key))
-        rows = [score_query(
-                    retr.retrieve(q["query"], k_dense=60, k_rerank=max(KS), use_graph=cfg["use_graph"])["children"], q)
-                for q in queries]
+        rows = []
+        for q in queries:
+            ug = cfg["graph"] == "comparison" and q["type"] == "comparison"
+            rows.append(score_query(
+                retr.retrieve(q["query"], k_dense=60, k_rerank=max(KS), use_graph=ug)["children"], q))
         results[name] = {"per_query": rows, "agg": aggregate(rows)}
         a = results[name]["agg"]["overall"]
         print(f"\n[{name}] overall: " + "  ".join(f"{k}={a[k]}" for k in ("mrr", "hit@5", "hit@10", "cov@10")))

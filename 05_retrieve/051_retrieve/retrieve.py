@@ -120,12 +120,18 @@ class Retriever:
         return self.dense(q, k=add, slugs=list(neigh)) if neigh else []
 
     def retrieve(self, q: str, k_dense: int = 50, k_rerank: int = 8,
-                 n_parents: int = 5, use_graph: bool = False) -> dict:
+                 n_parents: int = 5, use_graph: bool = False, reserve: int = 3) -> dict:
         hits = self.dense(q, k_dense)
         ranked = self.rerank(q, hits, k_rerank)
-        if use_graph:
+        if use_graph and reserve > 0:
             extra = self.graph_expand(q, ranked)
-            ranked = self.rerank(q, ranked + extra, k_rerank + 4)
+            if extra:
+                have = {h["chunk_id"] for h in ranked}
+                neigh = [e for e in self.rerank(q, extra, reserve) if e["chunk_id"] not in have][:reserve]
+                if neigh:  # 이웃 entity 청크를 상위에 슬롯 예약(주체 top-2 뒤) → 비교 질문 다양성 보장
+                    nset = {n["chunk_id"] for n in neigh}
+                    rest = [h for h in ranked[2:] if h["chunk_id"] not in nset]
+                    ranked = (ranked[:2] + neigh + rest)[:k_rerank]
         return {"children": ranked, "parents": self.parents(ranked, n_parents)}
 
 
