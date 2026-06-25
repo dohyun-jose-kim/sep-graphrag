@@ -1,13 +1,27 @@
 # === SEP 원문 / 파생물 — 절대 커밋 X (라이선스: 재배포 금지) ===
-data/            # 긁은 HTML / 정제 텍스트
-vectordb/        # Qdrant 인덱스
-docstore/        # parent 본문
-*.jsonl
+# 원칙: SEP에서 유래한 모든 것(본문·청크·임베딩·인덱스·그래프 산출)은
+#       data/ · vectordb/ · docstore/ 안에만 둔다. 아래는 그 밖으로 샐 경우의 2차 방어.
+data/            # 긁은 HTML / 정제 텍스트 / 청크 / 임베딩 / 그래프 산출 / neo4j data
+vectordb/        # Qdrant 인덱스 (qdrant_storage)
+docstore/        # parent 본문 (sqlite)
+*.jsonl          # 청크/메타/구조 (children, entries_meta, structure …)
+*.npy            # 임베딩 벡터 shard
+*.parquet
 *.faiss
 *.sqlite3
 
-# === secrets ===
+# === 모델 / 대용량 바이너리 (로컬 캐시·체크포인트, 소스 아님) ===
+*.safetensors
+*.bin
+*.pt
+*.gguf
+*.onnx
+
+# === secrets / env ===
 .env
+.env.*
+!.env.example     # 템플릿은 허용
+.streamlit/secrets.toml
 
 # === python ===
 .venv/
@@ -19,5 +33,7 @@ __pycache__/
 # === pyvis 부산물 (cdn_resources=in_line이면 안 생기지만 방어) ===
 lib/
 
-# === os ===
+# === IDE / OS ===
+.vscode/
+.idea/
 .DS_Store
