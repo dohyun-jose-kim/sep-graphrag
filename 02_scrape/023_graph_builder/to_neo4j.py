@@ -9,17 +9,19 @@ Neo4j Browser(http://localhost:7474)에서 Cypher로 탐색 + 시각화.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 from neo4j import GraphDatabase
 
 ROOT = Path(__file__).resolve().parents[2]
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))["neo4j"]
+PW = os.getenv("NEO4J_PASSWORD", "sepgraph123")  # 로컬 dev 기본값, .env로 override
 G = json.loads((ROOT / "data" / "graph" / "graph.json").read_text(encoding="utf-8"))
 
 
 def main() -> None:
-    driver = GraphDatabase.driver(CFG["url"], auth=(CFG["user"], CFG["password"]))
+    driver = GraphDatabase.driver(CFG["url"], auth=(CFG["user"], PW))
     with driver.session() as s:
         s.run("MATCH (n) DETACH DELETE n")
         s.run("CREATE CONSTRAINT entry_slug IF NOT EXISTS FOR (e:Entry) REQUIRE e.slug IS UNIQUE")

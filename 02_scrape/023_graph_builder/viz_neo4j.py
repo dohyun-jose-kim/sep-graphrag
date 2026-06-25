@@ -9,6 +9,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import matplotlib
@@ -20,6 +21,7 @@ from neo4j import GraphDatabase  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))["neo4j"]
+PW = os.getenv("NEO4J_PASSWORD", "sepgraph123")  # 로컬 dev 기본값, .env로 override
 OUT = ROOT / "data" / "graph"
 PALETTE = ["#e6194B", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#42d4f4",
            "#f032e6", "#bfef45", "#469990", "#9A6324"]
@@ -49,7 +51,7 @@ def schema():
 
 
 def camus_2hop(seed="camus"):
-    driver = GraphDatabase.driver(CFG["url"], auth=(CFG["user"], CFG["password"]))
+    driver = GraphDatabase.driver(CFG["url"], auth=(CFG["user"], PW))
     with driver.session() as s:
         nodes = {r["slug"]: (r["comm"], r["pr"]) for r in s.run(
             "MATCH (c:Entry{slug:$x})-[:RELATED_TO*0..2]-(n) "
