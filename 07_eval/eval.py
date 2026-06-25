@@ -58,7 +58,8 @@ def main() -> None:
     for name, cfg in configs.items():
         key = cfg["use_rerank"]
         retr = retr_cache.setdefault(key, rmod.Retriever(use_rerank=key))
-        rows = [score_query(retr.retrieve(q["query"], use_graph=cfg["use_graph"])["children"], q)
+        rows = [score_query(
+                    retr.retrieve(q["query"], k_dense=60, k_rerank=max(KS), use_graph=cfg["use_graph"])["children"], q)
                 for q in queries]
         results[name] = {"per_query": rows, "agg": aggregate(rows)}
         a = results[name]["agg"]["overall"]
