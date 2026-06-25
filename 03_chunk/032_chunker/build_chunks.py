@@ -156,7 +156,9 @@ def main() -> None:
     db.close()
 
     lens.sort()
-    pct = lambda p: lens[int(len(lens) * p)] if lens else 0
+    def pct(p):
+        return lens[int(len(lens) * p)] if lens else 0
+
     print(f"parents: {n_parent}  -> data/docstore/parents.sqlite")
     print(f"children: {n_child}  -> data/chunks/children.jsonl")
     print(f"child tokens  min {lens[0]} / p25 {pct(.25)} / median {pct(.5)} / p75 {pct(.75)} / "

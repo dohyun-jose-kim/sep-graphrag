@@ -62,8 +62,8 @@ class Retriever:
                 print(f"[retrieve] reranker 로드 실패 → dense 폴백: {e}")
         self.adj: dict[str, list[str]] = {}
         if GRAPH.exists():
-            for l in json.loads(GRAPH.read_text(encoding="utf-8")).get("links", []):
-                self.adj.setdefault(l["source"], []).append(l["target"])
+            for lnk in json.loads(GRAPH.read_text(encoding="utf-8")).get("links", []):
+                self.adj.setdefault(lnk["source"], []).append(lnk["target"])
 
     def encode_query(self, q: str):
         try:

@@ -33,7 +33,7 @@ def main() -> None:
                   "SET e.title=r.title, e.author=r.author, e.community=r.community, e.pagerank=r.pagerank",
                   rows=nodes[i:i + 1000])
 
-        edges = [{"s": l["source"], "t": l["target"]} for l in G["links"]]
+        edges = [{"s": lnk["source"], "t": lnk["target"]} for lnk in G["links"]]
         for i in range(0, len(edges), 2000):
             s.run("UNWIND $rows AS r MATCH (a:Entry {slug:r.s}),(b:Entry {slug:r.t}) "
                   "MERGE (a)-[:RELATED_TO]->(b)", rows=edges[i:i + 2000])

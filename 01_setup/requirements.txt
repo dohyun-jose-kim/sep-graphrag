@@ -19,3 +19,7 @@ transformers>=4.40          # Qwen3 토크나이저/리랭커
 
 # Phase 7 — 챗봇 UI (081)
 streamlit>=1.30
+
+# dev
+ruff>=0.6
+pytest>=8

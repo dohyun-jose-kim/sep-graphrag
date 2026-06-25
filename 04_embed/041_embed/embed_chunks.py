@@ -36,7 +36,7 @@ def main() -> None:
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
 
-    rows = [json.loads(l) for l in open(CHILDREN, encoding="utf-8")]
+    rows = [json.loads(ln) for ln in open(CHILDREN, encoding="utf-8")]
     if args.limit:
         rows = rows[: args.limit]
     (OUT / "ids.json").write_text(json.dumps([r["id"] for r in rows]), encoding="utf-8")

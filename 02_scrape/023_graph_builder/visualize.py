@@ -14,6 +14,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import networkx as nx  # noqa: E402

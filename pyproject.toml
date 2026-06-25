@@ -1,0 +1,8 @@
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+# 번호 폴더(01_setup 등)는 Python 패키지 아님 — 스크립트 단위로 lint
+extend-exclude = [".venv", "data", "vectordb", "docstore"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP"]

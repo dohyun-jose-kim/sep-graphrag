@@ -13,6 +13,7 @@ import os
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import networkx as nx  # noqa: E402
@@ -46,7 +47,9 @@ def schema():
             ha="center", va="top", fontsize=11, color="#222",
             bbox=dict(boxstyle="round", fc="#eef", ec="#88a"))
     ax.text(0.5, 0.97, "SEP GraphRAG — Neo4j schema", ha="center", fontsize=14, fontweight="bold")
-    ax.set_xlim(0, 1); ax.set_ylim(0, 1); ax.axis("off")
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.axis("off")
     save(fig, "schema")
 
 
@@ -62,7 +65,9 @@ def camus_2hop(seed="camus"):
             "RETURN a.slug AS a, b.slug AS b", s=slugs)]
     driver.close()
 
-    G = nx.DiGraph(); G.add_nodes_from(slugs); G.add_edges_from(elist)
+    G = nx.DiGraph()
+    G.add_nodes_from(slugs)
+    G.add_edges_from(elist)
     hop = nx.single_source_shortest_path_length(G.to_undirected(), seed, cutoff=2)
     hop_color = {0: "#e6194B", 1: "#f58231", 2: "#9ecae1"}
     one_hop = [n for n in G if hop.get(n) == 1]

@@ -44,7 +44,7 @@ def load_vectors() -> np.ndarray:
 def main() -> None:
     ids = json.loads((EMB / "ids.json").read_text(encoding="utf-8"))
     vecs = load_vectors()
-    rows = [json.loads(l) for l in open(CHILDREN, encoding="utf-8")][: len(ids)]
+    rows = [json.loads(ln) for ln in open(CHILDREN, encoding="utf-8")][: len(ids)]
     assert len(ids) == len(vecs) == len(rows), (len(ids), len(vecs), len(rows))
 
     client = make_client()
@@ -63,7 +63,7 @@ def main() -> None:
                 "level": r["level"], "has_stripped_math": r["has_stripped_math"],
                 "tokens": r["tokens"], "text": r["text"],
             })
-            for j, (r, v) in enumerate(zip(rows[i : i + B], vecs[i : i + B]), start=i)
+            for j, (r, v) in enumerate(zip(rows[i : i + B], vecs[i : i + B], strict=False), start=i)
         ]
         client.upsert(COLL, points=pts)
         print(f"upserted {min(i + B, len(rows))}/{len(rows)}", flush=True)
