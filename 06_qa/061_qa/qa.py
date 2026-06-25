@@ -31,25 +31,31 @@ def load_retriever():
     return m.Retriever()
 
 
-def build_prompt(query: str, parents: list[dict], no_think: bool) -> str:
+def build_prompt(query: str, parents: list[dict]) -> str:
     ctx = "\n\n".join(
         f"[{i+1}] ({p['slug']} — {p['section_path']})\nSOURCE: {p['url']}\n{p['text'][:1800]}"
         for i, p in enumerate(parents)
     )
-    prefix = "/no_think\n" if no_think else ""
-    return f"{prefix}{SYS}\n\n=== CONTEXT ===\n{ctx}\n\n=== QUESTION ===\n{query}\n\n=== ANSWER (with source URLs) ==="
+    return f"{SYS}\n\n=== CONTEXT ===\n{ctx}\n\n=== QUESTION ===\n{query}\n\n=== ANSWER (with source URLs) ==="
 
 
-def ollama(model: str, prompt: str) -> str:
-    r = httpx.post(OLLAMA, json={"model": model, "prompt": prompt, "stream": False}, timeout=600)
+def ollama(model: str, prompt: str, think: bool | None = None) -> tuple[str, str]:
+    """(answer, thinking) 반환. Ollama는 추론을 별도 'thinking' 필드로 준다.
+    think: True/False면 API에 그대로 전달(qwen3 등 reasoning 모델), None이면 키 생략(gemma 등)."""
+    payload = {"model": model, "prompt": prompt, "stream": False}
+    if think is not None:
+        payload["think"] = think
+    r = httpx.post(OLLAMA, json=payload, timeout=600)
     r.raise_for_status()
-    return r.json().get("response", "").strip()
+    j = r.json()
+    return j.get("response", "").strip(), (j.get("thinking") or "").strip()
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("query")
     ap.add_argument("--graph", action="store_true")
+    ap.add_argument("--think", action="store_true", help="qwen3 추론 과정 표시")
     ap.add_argument("--models", nargs="*", default=MODELS)
     a = ap.parse_args()
 
@@ -57,12 +63,15 @@ def main() -> None:
     parents = res["parents"]
     print(f"\nQ: {a.query}\ncontext: {len(parents)} sections\n" + "=" * 60)
     for model in a.models:
-        prompt = build_prompt(a.query, parents, no_think=model.startswith("qwen3"))
+        think = a.think if model.startswith("qwen3") else None
         try:
-            ans = ollama(model, prompt)
+            ans, thinking = ollama(model, build_prompt(a.query, parents), think=think)
         except Exception as e:
-            ans = f"[{model} 호출 실패: {e}]"
-        print(f"\n### {model}\n{ans}")
+            ans, thinking = f"[{model} 호출 실패: {e}]", ""
+        print(f"\n### {model}")
+        if thinking:
+            print(f"<thinking>\n{thinking}\n</thinking>")
+        print(ans)
     print("\n--- sources ---")
     for p in parents:
         print(f"  {p['url']}")
