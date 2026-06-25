@@ -26,7 +26,8 @@ import networkx as nx
 from pyvis.network import Network
 
 ROOT = Path(__file__).resolve().parents[2]
-CONTENTS = json.loads((ROOT / "data" / "contents" / "entries.json").read_text(encoding="utf-8"))
+_CONTENTS_PATH = ROOT / "data" / "contents" / "entries.json"
+CONTENTS = json.loads(_CONTENTS_PATH.read_text(encoding="utf-8")) if _CONTENTS_PATH.exists() else []
 META_PATH = ROOT / "data" / "metadata" / "entries_meta.json"
 OUT = ROOT / "data" / "graph"
 

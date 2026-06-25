@@ -6,3 +6,6 @@ extend-exclude = [".venv", "data", "vectordb", "docstore"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "W", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

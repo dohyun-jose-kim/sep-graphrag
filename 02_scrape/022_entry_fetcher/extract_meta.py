@@ -18,10 +18,9 @@ from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[2]
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
-CONTENTS = {
-    e["slug"]: e
-    for e in json.loads((ROOT / "data" / "contents" / "entries.json").read_text(encoding="utf-8"))
-}
+_CONTENTS_PATH = ROOT / "data" / "contents" / "entries.json"
+CONTENTS = ({e["slug"]: e for e in json.loads(_CONTENTS_PATH.read_text(encoding="utf-8"))}
+            if _CONTENTS_PATH.exists() else {})
 # 대소문자 무시 → 정규 slug 매핑 (SEP slug 대부분 소문자지만 equivME 등 5개는 대문자 포함)
 CI = {s.lower(): s for s in CONTENTS}
 RAW = ROOT / "data" / "raw" / "entries"

@@ -21,7 +21,8 @@ import httpx
 
 ROOT = Path(__file__).resolve().parents[2]
 CFG = json.loads((ROOT / "config.json").read_text(encoding="utf-8"))
-ENTRIES = json.loads((ROOT / "data" / "contents" / "entries.json").read_text(encoding="utf-8"))
+_ENTRIES_PATH = ROOT / "data" / "contents" / "entries.json"
+ENTRIES = json.loads(_ENTRIES_PATH.read_text(encoding="utf-8")) if _ENTRIES_PATH.exists() else []
 RAW = ROOT / "data" / "raw" / "entries"
 LOG = ROOT / "data" / "raw" / "fetch.log"
 

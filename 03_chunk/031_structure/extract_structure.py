@@ -20,10 +20,9 @@ from pathlib import Path
 from bs4 import BeautifulSoup
 
 ROOT = Path(__file__).resolve().parents[2]
-META = {
-    r["slug"]: r
-    for r in json.loads((ROOT / "data" / "metadata" / "entries_meta.json").read_text(encoding="utf-8"))
-}
+_META_PATH = ROOT / "data" / "metadata" / "entries_meta.json"
+META = ({r["slug"]: r for r in json.loads(_META_PATH.read_text(encoding="utf-8"))}
+        if _META_PATH.exists() else {})
 RAW = ROOT / "data" / "raw" / "entries"
 OUT = ROOT / "data" / "structure"
 
