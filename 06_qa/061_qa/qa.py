@@ -18,8 +18,10 @@ MODELS = ["qwen3:14b", "gemma3:4b"]  # A/B. qwen3는 /no_think로 thinking off
 
 SYS = (
     "You answer questions about philosophy using ONLY the provided SEP context. "
-    "Give a concise answer, quote at most one short phrase per source, and cite each "
-    "source by its URL. Do NOT reproduce long passages. If the context is insufficient, say so."
+    "Use the conversation so far to resolve references like 'this' / 'it'. "
+    "Answer concisely in the SAME language as the question, quote at most one short phrase per "
+    "source, and cite each source by its URL. Do NOT reproduce long passages. "
+    "If the context is insufficient, say so."
 )
 
 
@@ -31,12 +33,17 @@ def load_retriever():
     return m.Retriever()
 
 
-def build_prompt(query: str, parents: list[dict]) -> str:
+def build_prompt(query: str, parents: list[dict], history: list[dict] | None = None) -> str:
     ctx = "\n\n".join(
         f"[{i+1}] ({p['slug']} — {p['section_path']})\nSOURCE: {p['url']}\n{p['text'][:1800]}"
         for i, p in enumerate(parents)
     )
-    return f"{SYS}\n\n=== CONTEXT ===\n{ctx}\n\n=== QUESTION ===\n{query}\n\n=== ANSWER (with source URLs) ==="
+    convo = ""
+    if history:
+        turns = "\n".join(f"{m['role'].upper()}: {m['content']}" for m in history[-6:])
+        convo = f"\n=== CONVERSATION SO FAR ===\n{turns}\n"
+    return (f"{SYS}\n\n=== CONTEXT (SEP) ===\n{ctx}\n{convo}\n"
+            f"=== CURRENT QUESTION ===\n{query}\n\n=== ANSWER (with source URLs) ===")
 
 
 def ollama(model: str, prompt: str, think: bool | None = None) -> tuple[str, str]:
@@ -49,6 +56,22 @@ def ollama(model: str, prompt: str, think: bool | None = None) -> tuple[str, str
     r.raise_for_status()
     j = r.json()
     return j.get("response", "").strip(), (j.get("thinking") or "").strip()
+
+
+def condense_query(history: list[dict], question: str, model: str = "gemma3:4b") -> str:
+    """후속 질문을 대화 맥락 포함 standalone 영어 검색 쿼리로 재작성(검색 정확도용).
+    history 없으면 그대로. 가벼운 모델(gemma3:4b) 사용."""
+    if not history:
+        return question
+    convo = "\n".join(f"{m['role']}: {m['content']}" for m in history[-6:])
+    p = (f"Conversation:\n{convo}\n\nFollow-up question: {question}\n\n"
+         "Rewrite the follow-up as ONE standalone English search query that includes the needed "
+         "context from the conversation (resolve 'this'/'it'). Output ONLY the query text.")
+    try:
+        q, _ = ollama(model, p, think=False if model.startswith("qwen3") else None)
+        return q.strip().strip('"').splitlines()[0] or question
+    except Exception:
+        return question
 
 
 def main() -> None:

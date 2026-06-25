@@ -44,8 +44,12 @@ st.title("📚 SEP GraphRAG Chatbot")
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-st.sidebar.selectbox("Model", ["qwen3:14b", "gemma3:4b"], key="model")
-st.sidebar.caption("qwen3:14b 고품질(/no_think) · gemma3:4b 빠름")
+st.sidebar.selectbox(
+    "Model",
+    ["qwen3:32b", "qwen3:14b", "gemma4:31b", "gemma4:26b", "exaone3.5:32b", "gemma3:4b"],
+    key="model",
+)
+st.sidebar.caption("32b/31b 고품질·느림 · 14b 균형 · 4b 빠름 · qwen3은 🧠 thinking 지원")
 st.sidebar.toggle("Graph 확장 (비교·멀티홉)", key="use_graph", value=False)
 st.sidebar.toggle("🧠 thinking 표시 (qwen3)", key="show_think", value=False)
 if st.sidebar.button("새 세션"):
@@ -63,18 +67,23 @@ for m in st.session_state.messages:
             _sources_expander(m.get("sources"))
 
 if prompt := st.chat_input("철학 질문을 입력하세요 (예: What is the absurd for Camus?)"):
+    history = list(st.session_state.messages)  # 이전 턴들(현재 입력 추가 전)
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
     with st.chat_message("assistant"):
         with st.spinner("검색 + 생성 중..."):
-            res = get_retriever().retrieve(prompt, k_rerank=8, n_parents=5,
+            search_q = qa_mod.condense_query(history, prompt)  # 대화 맥락 → standalone 검색쿼리
+            res = get_retriever().retrieve(search_q, k_rerank=8, n_parents=5,
                                            use_graph=st.session_state.use_graph)
             parents = res["parents"]
             model = st.session_state.model
             is_qwen = model.startswith("qwen3")
             think_param = st.session_state.show_think if is_qwen else None  # gemma는 키 생략
-            ans, thinking = qa_mod.ollama(model, qa_mod.build_prompt(prompt, parents), think=think_param)
+            ans, thinking = qa_mod.ollama(model, qa_mod.build_prompt(prompt, parents, history),
+                                          think=think_param)
+        if search_q != prompt:
+            st.caption(f"🔎 검색 쿼리(맥락 반영): {search_q}")
         if thinking:
             with st.expander("🧠 thinking", expanded=True):
                 st.markdown(thinking)
