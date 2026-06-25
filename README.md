@@ -89,3 +89,23 @@ python 02_scrape/023_graph_builder/visualize.py     # community_map.png, hub_sub
 python 02_scrape/023_graph_builder/viz_neo4j.py      # schema.svg, camus_2hop.svg
 ```
 스냅샷·Cypher 예시는 [`02_scrape/023_graph_builder/README.md`](./02_scrape/023_graph_builder/README.md).
+
+## Use Case
+1. camus and sartre about suicide
+
+![alt 확장아님 text](image-2.png)
+
+![alt text](image-3.png)
+
+2. In Camus's The Myth of Sisyphus, how can we interpret Sisyphus being happy even during the descent, as he walks back down the mountain to retrieve the rock?
+
+![alt text](image-6.png)
+
+> ![alt text](image-7.png)
+
+
+3. context 
+
+![alt text](image-8.png)
+
+![alt text](image-9.png)
