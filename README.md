@@ -37,4 +37,5 @@ SEP 본문은 저작권이 살아있고 **전자적 재배포가 금지**돼 있
 **실행**: `docker compose up -d qdrant` → `streamlit run 08_chatbot/app.py` (Ollama 필요).
 
 평가 결과·결정은 [`Docs/eval-design.md`](./Docs/eval-design.md), 전체 설계는 [`Docs/PLAN.md`](./Docs/PLAN.md).
-GraphRAG 그래프 확장은 현재 no-op(지배 entity 점유) → 이웃 슬롯 예약이 후속 과제(eval-design 참고).
+GraphRAG 그래프 확장은 **이웃 슬롯 예약(comparison 전용)**으로 comparison cov@10 0.571→0.643 개선(#12).
+그래프는 Neo4j(`docker compose up -d neo4j`, :7474)로도 탐색 가능 — 스냅샷 `data/graph/{community_map,hub_subgraph}.png`, `{schema,camus_2hop}.svg`.
