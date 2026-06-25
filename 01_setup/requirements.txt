@@ -15,3 +15,7 @@ scipy>=1.11      # networkx pagerank
 torch>=2.2                  # MPS(Apple Silicon)
 sentence-transformers>=3
 qdrant-client>=1.9
+transformers>=4.40          # Qwen3 토크나이저/리랭커
+
+# Phase 7 — 챗봇 UI (081)
+streamlit>=1.30
