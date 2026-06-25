@@ -5,6 +5,14 @@
 
 ---
 
+## 진행 상태 (2026-06-25) — Phase 1–7 구현·검증 완료 ✅
+entry 1,861 → child 152,611 → Qdrant 인덱싱 → dense+**rerank** 리트리벌(eval hit@10 **0.875**) → QA(Ollama qwen3/gemma) → Streamlit 챗봇.
+그래프는 Neo4j 적재 + 시각화, **슬롯예약(comparison)으로 graph 확장 효과화**(#12, comparison cov 0.571→0.643).
+실측으로 확정된 결정은 [`eval-design.md`](./eval-design.md) 우선(아래 §5·§6은 원안). 자율 실행 기록 [`autonomous-plan.md`](./autonomous-plan.md).
+**미채택/보류**: hybrid(sparse), 4B/8B 전체 임베딩, MRL 차원축소 — rerank로 0.6B 충분해 보류.
+
+---
+
 ## 0. 한눈에 보기
 
 | 축 | 결정 |
