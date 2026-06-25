@@ -5,9 +5,10 @@ SEP GraphRAG 챗봇 화면. **참고 디자인**: `03_Chatbot-RAG-LLM/RAG-LLM_ve
 
 ## 실행 (repo 루트에서)
 ```bash
-streamlit run 08_chatbot/app.py        # Qdrant docker + Ollama 떠 있어야 함
+streamlit run 08_chatbot/app.py --server.fileWatcherType none   # Qdrant docker + Ollama 떠 있어야 함
 ```
 → http://localhost:8501
+`--server.fileWatcherType none`: Streamlit 파일워처가 torch 모듈을 훑다 내는 torchvision 트레이스백 방지(알려진 이슈).
 
 ## 구성
 - `Retriever`(051) + `qa`(061)를 importlib로 직접 호출 (별도 API 서버 없음, 로컬 단일유저).

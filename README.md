@@ -47,7 +47,7 @@ python 04_embed/042_qdrant/index_qdrant.py
 python 05_retrieve/051_retrieve/retrieve.py "What is the absurd for Camus?" [--graph]
 python 06_qa/061_qa/qa.py "..."
 python 07_eval/eval.py
-streamlit run 08_chatbot/app.py                            # → http://localhost:8501
+streamlit run 08_chatbot/app.py --server.fileWatcherType none   # → http://localhost:8501
 ```
 각 단계 상세는 해당 폴더의 README, 작업 정책은 [`CLAUDE.md`](./CLAUDE.md).
 
