@@ -15,5 +15,10 @@
     "url": "http://localhost:6333",
     "collection": "sep_chunks_0.6B"
   },
+  "neo4j": {
+    "url": "bolt://localhost:7687",
+    "user": "neo4j",
+    "password": "sepgraph123"
+  },
   "notes": "robots.txt가 /archives/를 Disallow → 라이브 /entries/ 사용. 재현성은 로컬 스냅샷 + snapshot_date로 확보. crawl-delay 5는 robots.txt 준수값."
 }
