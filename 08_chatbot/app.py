@@ -47,6 +47,7 @@ if "messages" not in st.session_state:
 st.sidebar.selectbox("Model", ["qwen3:14b", "gemma3:4b"], key="model")
 st.sidebar.caption("qwen3:14b 고품질(/no_think) · gemma3:4b 빠름")
 st.sidebar.toggle("Graph 확장 (비교·멀티홉)", key="use_graph", value=False)
+st.sidebar.toggle("🧠 thinking 표시 (qwen3)", key="show_think", value=False)
 if st.sidebar.button("새 세션"):
     st.session_state.messages = []
     st.rerun()
@@ -68,8 +69,16 @@ if prompt := st.chat_input("철학 질문을 입력하세요 (예: What is the a
                                            use_graph=st.session_state.use_graph)
             parents = res["parents"]
             model = st.session_state.model
-            ans = qa_mod.ollama(model, qa_mod.build_prompt(prompt, parents,
-                                                           no_think=model.startswith("qwen3")))
+            is_qwen = model.startswith("qwen3")
+            no_think = not (is_qwen and st.session_state.show_think)
+            raw = qa_mod.ollama(model, qa_mod.build_prompt(prompt, parents, no_think=no_think))
+            think, ans = "", raw
+            if "</think>" in raw:  # qwen3 thinking on → 트레이스 분리
+                think, ans = raw.split("</think>", 1)
+                think, ans = think.replace("<think>", "").strip(), ans.strip()
+        if think:
+            with st.expander("🧠 thinking"):
+                st.markdown(think)
         st.markdown(ans)
         sources = [{"slug": p["slug"], "section_path": p["section_path"], "url": p["url"]} for p in parents]
         _sources_expander(sources)
