@@ -42,3 +42,18 @@ python 02_scrape/023_graph_builder/build_graph.py
   | 2 | 81 | 중국철학 (daoism, mencius, confucius, mohism) |
 
 전체 요약은 `data/graph/hubs.json`, 인터랙티브는 `data/graph/graph.html`.
+
+## 그래프 추출 · 시각화 · Neo4j
+| 스크립트 | 산출 |
+|---|---|
+| `visualize.py` | `community_map.png`(10클러스터 메타그래프), `hub_subgraph.png`(top35 허브) |
+| `to_neo4j.py` | Neo4j 적재: `(:Entry{slug,title,author,community,pagerank})-[:RELATED_TO]->(:Entry)` |
+| `viz_neo4j.py` | `schema.svg`(스키마), `camus_2hop.svg`(Neo4j 쿼리 기반 2-hop, 155노드) |
+
+**Neo4j 탐색** (`docker compose up -d neo4j` → http://localhost:7474, neo4j/sepgraph123):
+```cypher
+MATCH (c:Entry {slug:'camus'})-[:RELATED_TO*1..2]-(n) RETURN c,n   // 2-hop 네트워크
+MATCH (e:Entry) RETURN e ORDER BY e.pagerank DESC LIMIT 20         // 허브
+MATCH (e:Entry) RETURN e.community, count(*) ORDER BY 2 DESC       // 커뮤니티 크기
+```
+- 외부 임포트용 edgelist는 `edges.csv`(Gephi/Neo4j LOAD CSV).
