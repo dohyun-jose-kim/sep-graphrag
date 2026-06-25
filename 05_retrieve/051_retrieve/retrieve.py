@@ -44,7 +44,7 @@ class Retriever:
                                          model_kwargs={"torch_dtype": torch.float16})
         self.model.max_seq_length = 512
         self.client = _client()
-        self.db = sqlite3.connect(str(DOCSTORE))
+        self.db = sqlite3.connect(str(DOCSTORE), check_same_thread=False)  # Streamlit 멀티스레드(읽기 전용)
         self.db.row_factory = sqlite3.Row
         self.reranker = None
         if use_rerank:
