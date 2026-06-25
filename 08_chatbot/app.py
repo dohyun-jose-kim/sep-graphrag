@@ -72,16 +72,22 @@ if prompt := st.chat_input("철학 질문을 입력하세요 (예: What is the a
     with st.chat_message("user"):
         st.markdown(prompt)
     with st.chat_message("assistant"):
-        with st.spinner("검색 + 생성 중..."):
-            search_q = qa_mod.condense_query(history, prompt)  # 대화 맥락 → standalone 검색쿼리
-            res = get_retriever().retrieve(search_q, k_rerank=8, n_parents=5,
-                                           use_graph=st.session_state.use_graph)
-            parents = res["parents"]
-            model = st.session_state.model
-            is_qwen = model.startswith("qwen3")
-            think_param = st.session_state.show_think if is_qwen else None  # gemma는 키 생략
-            ans, thinking = qa_mod.ollama(model, qa_mod.build_prompt(prompt, parents, history),
-                                          think=think_param)
+        try:
+            with st.spinner("검색 + 생성 중..."):
+                search_q = qa_mod.condense_query(history, prompt)  # 대화 맥락 → standalone 검색쿼리
+                res = get_retriever().retrieve(search_q, k_rerank=8, n_parents=5,
+                                               use_graph=st.session_state.use_graph)
+                parents = res["parents"]
+                model = st.session_state.model
+                is_qwen = model.startswith("qwen3")
+                think_param = st.session_state.show_think if is_qwen else None  # gemma는 키 생략
+                ans, thinking = qa_mod.ollama(model, qa_mod.build_prompt(prompt, parents, history),
+                                              think=think_param)
+        except Exception as e:
+            st.error("⚠️ 서비스 연결 오류 — Qdrant/Ollama 확인 후 재시도하세요.\n\n"
+                     "`docker compose up -d qdrant neo4j` + Ollama 실행 (점검: `make healthcheck`)\n\n"
+                     f"{type(e).__name__}: {str(e)[:300]}")
+            st.stop()
         if search_q != prompt:
             st.caption(f"🔎 검색 쿼리(맥락 반영): {search_q}")
         if thinking:
