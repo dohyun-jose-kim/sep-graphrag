@@ -1,11 +1,11 @@
 # === SEP 원문 / 파생물 — 절대 커밋 X (라이선스: 재배포 금지) ===
-# 원칙: SEP에서 유래한 모든 것(본문·청크·임베딩·인덱스·그래프 산출)은
-#       data/ · vectordb/ · docstore/ 안에만 둔다. 아래는 그 밖으로 샐 경우의 2차 방어.
-data/            # 긁은 HTML / 정제 텍스트 / 청크 / 임베딩 / 그래프 산출 / neo4j data
-vectordb/        # Qdrant 인덱스 (qdrant_storage)
-docstore/        # parent 본문 (sqlite)
-*.jsonl          # 청크/메타/구조 (children, entries_meta, structure …)
-*.npy            # 임베딩 벡터 shard
+# 원칙: SEP 유래물(본문·청크·임베딩·인덱스·그래프 산출)은 data/·vectordb/·docstore/ 안에만 둔다.
+# 주의: .gitignore는 줄 끝 인라인 주석을 지원하지 않는다 → 패턴 줄에는 주석을 달지 말 것.
+data/
+vectordb/
+docstore/
+*.jsonl
+*.npy
 *.parquet
 *.faiss
 *.sqlite3
@@ -20,7 +20,7 @@ docstore/        # parent 본문 (sqlite)
 # === secrets / env ===
 .env
 .env.*
-!.env.example     # 템플릿은 허용
+!.env.example
 .streamlit/secrets.toml
 
 # === python ===
