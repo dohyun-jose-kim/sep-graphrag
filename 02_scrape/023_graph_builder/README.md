@@ -46,7 +46,7 @@ python 02_scrape/023_graph_builder/build_graph.py
 ## 그래프 추출 · 시각화 · Neo4j
 | 스크립트 | 산출 |
 |---|---|
-| `visualize.py` | `community_map.png`(10클러스터 메타그래프), `hub_subgraph.png`(top35 허브) |
+| `visualize.py` | `community_map.png`(10클러스터 메타그래프), `hub_subgraph.png`(top35 허브), `full_graph.png`(전체 1,861 노드) |
 | `to_neo4j.py` | Neo4j 적재: `(:Entry{slug,title,author,community,pagerank})-[:RELATED_TO]->(:Entry)` |
 | `viz_neo4j.py` | `schema.svg`(스키마), `camus_2hop.svg`(Neo4j 쿼리 기반 2-hop, 155노드) |
 

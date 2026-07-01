@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """023b — 그래프 정적 스냅샷 (matplotlib).
 
-data/graph/graph.json → 두 PNG:
+data/graph/graph.json → 세 PNG:
   data/graph/community_map.png  - 커뮤니티 메타그래프(10 클러스터가 어떻게 연결되나)
   data/graph/hub_subgraph.png   - PageRank 상위 허브 유도 부분그래프(가독성)
+  data/graph/full_graph.png     - 전체 1,861 노드 개별 시각화(커뮤니티별로 뭉쳐 배치)
 
 사용: python 02_scrape/023_graph_builder/visualize.py
 """
@@ -18,6 +19,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import networkx as nx  # noqa: E402
+import numpy as np  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "data" / "graph"
@@ -87,10 +89,67 @@ def hub_subgraph(G: nx.DiGraph, top: int = 35) -> None:
     print("-> data/graph/hub_subgraph.png")
 
 
+def full_graph(G: nx.DiGraph, label_top: int = 60) -> None:
+    """전체 노드를 한 장에: 커뮤니티를 은하 형태로 뭉쳐 배치 + 개별 노드 표시."""
+    comm = {n: G.nodes[n].get("community", 0) for n in G}
+    pr = {n: G.nodes[n].get("pagerank", 0) or 0 for n in G}
+    mx_pr = max(pr.values()) or 1
+    U = G.to_undirected()
+
+    # 1) 커뮤니티 메타그래프로 클러스터 중심 좌표 계산 (community_map()과 동일한 배치 로직)
+    ew = Counter()
+    for u, v in G.edges():
+        a, b = comm[u], comm[v]
+        if a != b:
+            ew[tuple(sorted((a, b)))] += 1
+    meta = nx.Graph()
+    meta.add_nodes_from(set(comm.values()))
+    for (a, b), w in ew.items():
+        meta.add_edge(a, b, weight=w)
+    sizes = Counter(comm.values())
+    centroid = nx.spring_layout(meta, weight="weight", seed=42, k=1.5)
+    spread = 3.2  # 클러스터 간 간격
+    centroid = {c: xy * spread for c, xy in centroid.items()}
+
+    # 2) 각 노드를 소속 커뮤니티 중심 근방에 지터로 초기 배치 후 spring_layout으로 이완
+    rng = np.random.RandomState(42)
+    init_pos = {n: centroid[comm[n]] + rng.normal(scale=0.6, size=2) for n in G}
+    pos = nx.spring_layout(U, pos=init_pos, k=0.12, iterations=40, seed=42)
+
+    labels = {n: n for n in sorted(G, key=lambda n: pr[n], reverse=True)[:label_top]}
+
+    fig, ax = plt.subplots(figsize=(24, 18))
+    nx.draw_networkx_edges(U, pos, alpha=0.045, edge_color="#666", width=0.35, ax=ax)
+    nx.draw_networkx_nodes(U, pos, node_size=[15 + 700 * (pr[n] / mx_pr) ** 0.5 for n in G],
+                           node_color=[PALETTE[comm[n] % len(PALETTE)] for n in G], alpha=0.85, linewidths=0, ax=ax)
+    nx.draw_networkx_labels(G, pos, labels=labels, font_size=7, ax=ax)
+
+    # 커뮤니티 범례(색 -> 대표 주제)
+    members = defaultdict(list)
+    for n in G:
+        members[comm[n]].append(n)
+    handles = []
+    for c in sorted(sizes, key=lambda c: -sizes[c]):
+        top3 = sorted(members[c], key=lambda n: pr[n], reverse=True)[:3]
+        handles.append(plt.Line2D([0], [0], marker="o", color="none", markerfacecolor=PALETTE[c % len(PALETTE)],
+                                   markersize=10, label=f"c{c} (n={sizes[c]}): " + ", ".join(top3)))
+    ax.legend(handles=handles, loc="lower left", fontsize=8, framealpha=0.9, title="community")
+
+    ax.set_title(f"SEP Related-Entries — Full graph ({G.number_of_nodes()} nodes / {G.number_of_edges()} edges, "
+                 f"color=community, size=pagerank, top {label_top} labeled)", fontsize=14)
+    ax.axis("off")
+    plt.tight_layout()
+    for ext in ("png", "svg"):
+        plt.savefig(OUT / f"full_graph.{ext}", dpi=140)
+    plt.close()
+    print("-> data/graph/full_graph.png (+svg)")
+
+
 def main() -> None:
     G = load()
     community_map(G)
     hub_subgraph(G)
+    full_graph(G)
 
 
 if __name__ == "__main__":
