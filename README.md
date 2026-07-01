@@ -88,6 +88,12 @@ python 02_scrape/023_graph_builder/viz_neo4j.py   # schema.svg, camus_2hop.svg
 
 ![alt text](image-9.png)
 
+4. graph
+full graph
+![alt text](data/graph/full_graph.svg)
+partial
+![alt text](data/graph/camus_2hop.png)
+
 ## 라이선스
 
 코드는 MIT([`LICENSE`](./LICENSE)). SEP 본문은 저작권이 별개라 저장소에 없고 MIT도 적용되지 않는다. 저자와 Stanford Metaphysics Research Lab의 저작물이며, 코퍼스는 직접 스크래핑해서 로컬에서만 쓴다.
