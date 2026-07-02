@@ -19,5 +19,13 @@
     "url": "bolt://localhost:7687",
     "user": "neo4j"
   },
+  "chatbot": {
+    "core_port": 9000,
+    "shim_port": 9001,
+    "models": ["qwen3:32b", "qwen3:14b", "gemma3:4b"],
+    "default_model": "qwen3:14b",
+    "condense_model": "gemma3:4b",
+    "notes": "챗봇 모델 목록의 단일 진실(09_chatbot-clone core/shim이 읽음). qwen3 계열만 thinking 지원. 상세: Docs/plan-09-librechat.md"
+  },
   "notes": "robots.txt가 /archives/를 Disallow → 라이브 /entries/ 사용. 재현성은 로컬 스냅샷 + snapshot_date로 확보. crawl-delay 5는 robots.txt 준수값."
 }

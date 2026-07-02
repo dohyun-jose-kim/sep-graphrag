@@ -1,3 +1,5 @@
+# 루트 compose = 데이터 인프라 전용 (qdrant/neo4j — 파이프라인·챗봇이 공유하는 인덱스/그래프).
+# 챗봇 UI 스택(LibreChat + mongo)은 별도: 09_chatbot-clone/092_librechat/docker-compose.yml
 services:
   qdrant:
     image: qdrant/qdrant:latest

@@ -33,6 +33,9 @@ __pycache__/
 # === pyvis 부산물 (cdn_resources=in_line이면 안 생기지만 방어) ===
 lib/
 
+# === upstream 소스 클론 (참조 전용, 자체 .git 보유 — 커밋 금지) ===
+09_chatbot-clone/LibreChat/
+
 # === IDE / OS ===
 .vscode/
 .idea/
