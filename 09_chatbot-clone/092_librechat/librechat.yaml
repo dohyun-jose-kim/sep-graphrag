@@ -1,0 +1,79 @@
+# 092 — LibreChat 설정. 커스텀 엔드포인트 → 호스트의 OpenAI-compat 셰임(:9001).
+# 토글(graph/think)은 모델 접미사 프리셋으로 전달, modelSpecs 카드로 라벨링 (스파이크 검증 방식).
+# 모델 목록의 단일 진실은 config.json chatbot.models — 여기 models/modelSpecs는 그 전개형.
+version: 1.2.1
+cache: true
+
+endpoints:
+  custom:
+    - name: "SEP GraphRAG"
+      apiKey: "dummy-key"                              # 셰임은 인증 무시(로컬 단일 백엔드)
+      baseURL: "http://host.docker.internal:9001/v1"   # 컨테이너 → 호스트 셰임
+      models:
+        default:
+          - "qwen3:32b"
+          - "qwen3:32b+graph"
+          - "qwen3:32b+think"
+          - "qwen3:32b+graph+think"
+          - "qwen3:14b"
+          - "qwen3:14b+graph"
+          - "qwen3:14b+think"
+          - "qwen3:14b+graph+think"
+          - "gemma3:4b"
+          - "gemma3:4b+graph"
+        fetch: false
+      titleConvo: false                                # 제목 자동생성 LLM 호출 끔
+      modelDisplayLabel: "SEP GraphRAG"
+
+modelSpecs:
+  enforce: false
+  prioritize: true
+  list:
+    - name: sep-14b
+      label: "균형 (qwen3 14B)"
+      default: true
+      description: "품질/속도 균형. 일반 질문 기본값."
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:14b" }
+    - name: sep-14b-graph
+      label: "균형 + 그래프확장"
+      description: "비교·멀티홉 질문 — 관련 항목(그래프 1홉)을 함께 검색."
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:14b+graph" }
+    - name: sep-14b-think
+      label: "균형 + 사고과정"
+      description: "qwen3 reasoning 트레이스를 함께 표시."
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:14b+think" }
+    - name: sep-14b-graph-think
+      label: "균형 + 그래프 + 사고"
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:14b+graph+think" }
+    - name: sep-32b
+      label: "고품질 (qwen3 32B)"
+      description: "최고 품질·느림."
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:32b" }
+    - name: sep-32b-graph
+      label: "고품질 + 그래프확장"
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:32b+graph" }
+    - name: sep-32b-think
+      label: "고품질 + 사고과정"
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:32b+think" }
+    - name: sep-32b-graph-think
+      label: "고품질 + 그래프 + 사고"
+      preset: { endpoint: "SEP GraphRAG", model: "qwen3:32b+graph+think" }
+    - name: sep-4b
+      label: "빠름 (gemma3 4B)"
+      description: "저지연. 간단한 질문/실험."
+      preset: { endpoint: "SEP GraphRAG", model: "gemma3:4b" }
+    - name: sep-4b-graph
+      label: "빠름 + 그래프확장"
+      preset: { endpoint: "SEP GraphRAG", model: "gemma3:4b+graph" }
+
+interface:
+  customWelcome: "SEP GraphRAG — 스탠퍼드 철학 백과(SEP) 기반 GraphRAG 챗봇입니다. 상단에서 모델 스펙을 고른 뒤 질문하세요. (로컬 전용 · 요약+인용+딥링크)"
+  endpointsMenu: false
+  modelSelect: true
+  parameters: false
+  presets: false
+  prompts: false
+  bookmarks: false
+  multiConvo: false
+  agents: false
+  sidePanel: true

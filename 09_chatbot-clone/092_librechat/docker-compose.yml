@@ -1,0 +1,33 @@
+# 092 — 챗봇 v2 UI 스택 (LibreChat + Mongo). 데이터 인프라(qdrant/neo4j)는 루트 compose.
+# 기동: docker compose -f 09_chatbot-clone/092_librechat/docker-compose.yml up -d
+#       (전제: 셰임이 호스트 :9001에 떠 있어야 함 — 09_chatbot-clone/README.md)
+services:
+  mongodb:
+    image: mongo:7
+    container_name: sep_chat_mongo
+    restart: unless-stopped
+    command: mongod --quiet
+    volumes:
+      - sep_chat_mongo_data:/data/db
+
+  librechat:
+    image: ghcr.io/danny-avila/librechat:latest
+    container_name: sep_chat_librechat
+    restart: unless-stopped
+    depends_on:
+      - mongodb
+    ports:
+      - "3080:3080"
+    env_file:
+      - .env
+    environment:
+      - HOST=0.0.0.0
+      - MONGO_URI=mongodb://mongodb:27017/LibreChat
+      - CONFIG_PATH=/app/librechat.yaml
+    volumes:
+      - ./librechat.yaml:/app/librechat.yaml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  sep_chat_mongo_data:
