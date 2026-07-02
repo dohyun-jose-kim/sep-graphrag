@@ -90,9 +90,9 @@ python 02_scrape/023_graph_builder/viz_neo4j.py   # schema.svg, camus_2hop.svg
 
 4. graph
 full graph
-![alt text](data/graph/full_graph.svg)
+![alt text](image-10.png)
 partial
-![alt text](data/graph/camus_2hop.png)
+![alt text](image-11.png)
 
 ## 라이선스
 
