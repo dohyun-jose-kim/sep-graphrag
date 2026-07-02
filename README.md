@@ -71,28 +71,38 @@ python 02_scrape/023_graph_builder/viz_neo4j.py   # schema.svg, camus_2hop.svg
 ## Use Case
 1. camus and sartre about suicide
 
-![alt 확장아님 text](image-2.png)
+Graph 확장 없이(dense만, qwen3:14b):
 
-![alt text](image-3.png)
+![suicide 질문 — dense 검색만 (qwen3:14b)](Docs/assets/usecase1-suicide-dense.png)
+
+Graph 확장 켜고(qwen3:32b) — Sartre 쪽 출처가 추가로 잡힌다:
+
+![suicide 질문 — graph 확장 (qwen3:32b)](Docs/assets/usecase1-suicide-graph.png)
 
 2. In Camus's The Myth of Sisyphus, how can we interpret Sisyphus being happy even during the descent, as he walks back down the mountain to retrieve the rock?
 
-![alt text](image-6.png)
+![Sisyphus 질문 — 답변과 원문 인용/딥링크](Docs/assets/usecase2-sisyphus-answer.png)
 
-> ![alt text](image-7.png)
+qwen3의 thinking 과정도 펼쳐볼 수 있다:
+
+![Sisyphus 질문 — thinking 패널 펼침](Docs/assets/usecase2-sisyphus-thinking.png)
 
 
-3. context 
+3. 멀티턴 — "how does this relate to sartre?" 같은 후속 질문을 이전 맥락을 반영한 검색 쿼리로 재작성한다
 
-![alt text](image-8.png)
+![멀티턴 — 후속 질문이 맥락 반영 쿼리로 재작성됨](Docs/assets/usecase3-multiturn-question.png)
 
-![alt text](image-9.png)
+![멀티턴 — 재작성된 쿼리 기반 답변](Docs/assets/usecase3-multiturn-answer.png)
 
 4. graph
-full graph
-![alt text](image-10.png)
-partial
-![alt text](image-11.png)
+
+전체 그래프(1,861 노드):
+
+![전체 그래프 시각화](Docs/assets/graph-full.png)
+
+부분 확대:
+
+![그래프 부분 확대](Docs/assets/graph-partial.png)
 
 ## 라이선스
 
