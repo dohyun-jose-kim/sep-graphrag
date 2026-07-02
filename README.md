@@ -22,10 +22,13 @@ SEP 본문은 저작권이 살아있고 전자적 재배포가 금지돼 있다.
 
 필요한 것은 macOS Apple Silicon(임베딩 MPS 가속, CPU도 되지만 느리다), Docker, Ollama(`ollama pull qwen3:14b gemma3:4b`), Python 3.11 + [uv](https://github.com/astral-sh/uv).
 
-인덱스가 이미 있으면 챗봇만 띄우면 된다.
+인덱스가 이미 있으면 챗봇만 띄우면 된다. 챗봇 UI는 LibreChat 기반 v2가 기본이다
+(실행 순서는 [`09_chatbot-clone/README.md`](./09_chatbot-clone/README.md) — 코어 API·셰임·LibreChat 3단).
 
 ```bash
 docker compose up -d qdrant neo4j
+# v2 (LibreChat, 기본): 09_chatbot-clone/README.md 참고 → http://localhost:3080
+# v1 (Streamlit, 레거시):
 streamlit run 08_chatbot/app.py --server.fileWatcherType none   # http://localhost:8501
 ```
 
@@ -45,7 +48,7 @@ make chat                        # 챗봇
 
 ## 파이프라인
 
-단계를 번호 폴더로 나눴다: `02_scrape` → `03_chunk` → `04_embed` → `05_retrieve` → `06_qa` → `07_eval` → `08_chatbot`.
+단계를 번호 폴더로 나눴다: `02_scrape` → `03_chunk` → `04_embed` → `05_retrieve` → `06_qa` → `07_eval` → `08_chatbot`(Streamlit, 레거시) → `09_chatbot-clone`(LibreChat, 현행).
 
 - **02_scrape** — 항목 1,861개와 메타데이터, Related Entries 그래프(노드 1,861 · 엣지 20,660 · 커뮤니티 10).
 - **03_chunk** — child 152,611개 / parent 31,371개. 문단 단위로 자르되 검색은 작은 child로, 컨텍스트는 그 child가 속한 parent 섹션으로 돌려준다(small-to-big). 인용 딥링크는 97%가량 살아있다.

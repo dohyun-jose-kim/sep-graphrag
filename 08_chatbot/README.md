@@ -1,5 +1,8 @@
 # 081 — 챗봇 UI (Streamlit)  (이슈 #11)
 
+> **레거시.** 현행 챗봇은 LibreChat 기반 [`09_chatbot-clone`](../09_chatbot-clone/README.md) (이슈 #21·#22).
+> 이 버전은 동작하는 백업으로 유지한다.
+
 SEP GraphRAG 챗봇 화면. **참고 디자인**: `03_Chatbot-RAG-LLM/RAG-LLM_ver2.0.0/06_ui`
 (채팅버블 + 사이드바 모델선택 + 소스 expander).
 
