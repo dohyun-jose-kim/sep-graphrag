@@ -20,6 +20,10 @@ transformers>=4.40          # Qwen3 토크나이저/리랭커
 # Phase 7 — 챗봇 UI (081)
 streamlit>=1.30
 
+# Phase 8 — 챗봇 v2 core API/셰임 (091, 092)
+fastapi>=0.115
+uvicorn>=0.30
+
 # dev
 ruff>=0.6
 pytest>=8
